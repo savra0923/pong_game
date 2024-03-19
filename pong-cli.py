@@ -31,6 +31,9 @@ if command == 'start':
 
 elif command == 'pause':
     print('Pausing the game')
+    if pong_time_ms is not None:
+        pong_time_ms = None
+    print('Resuming the game')
     sys.exit(0)
 
 elif command == 'resume':
