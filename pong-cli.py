@@ -21,6 +21,7 @@ if command == 'start':
         try:
             response = requests.get(instance1_url + '/ping')
             print(response.text)
+
             time.sleep(ping_interval)
         except KeyboardInterrupt:
             print('\nGame paused')
