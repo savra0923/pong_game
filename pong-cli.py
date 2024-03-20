@@ -6,7 +6,8 @@ import requests
 command = sys.argv[1]
 param = sys.argv[2] if len(sys.argv) > 2 else None
 
-instance1_url = 'http://localhost:8000'  # Change this to the URL of instance1
+instance1_url = 'http://localhost:8000'
+instance2_url = "http://localhost:8001"
 pong_time_ms = None
 ping_interval = None
 
@@ -17,9 +18,15 @@ if command == 'start':
     pong_time_ms = int(param)
     ping_interval = pong_time_ms / 1000
     print(f'Starting pong game with {pong_time_ms}ms interval between pongs')
+    
     while True:
         try:
             response = requests.get(instance1_url + '/ping')
+            print(response.text)
+
+            time.sleep(ping_interval)
+
+            response = requests.get(instance2_url + '/pong')
             print(response.text)
 
             time.sleep(ping_interval)
