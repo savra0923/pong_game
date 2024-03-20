@@ -15,22 +15,26 @@ ping_interval = pong_time_ms / 1000
 
 @app1.get("/ping")
 async def ping():
-    print(f"recieved PING")
     try:
-        response = requests.get(instance2_url + "/pong")
-        print(f"response from app1: {response.text}")
-        return response.text
+        response = requests.post(instance2_url + "/ping")
+        return {"message": f"Ping. Response: {response.json()['message']}"}
     except Exception as e:
         raise HTTPException(status_code=501, detail=f"Error pinging instance2: {e}")
+
+@app2.post("/ping")
+async def ping():
+    return {"message": "Pong"}
 
 
 @app2.get("/pong")
 async def pong():
-    print(f"recieved PONG")
     try:
         await asyncio.sleep(pong_time_ms / 1000)
-        response = requests.get(instance1_url + "/ping")
-        print(f"response from app2: {response.text}")
-        return response.text
+        response = requests.post(instance1_url + "/pong")
+        return {"message": f"Ping. Response: {response.json()['message']}"}
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Error pinging instance1: {e}")
+
+@app1.post("/pong")
+async def pong():
+    return {"message": "Pong"}
