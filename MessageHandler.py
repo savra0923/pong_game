@@ -37,10 +37,11 @@ class MessageHandler:
         self.ping_interval = pong_time_ms / 1000
         self.run_game = True
         
-        background_tasks.add_task(self.send_ping_from_instance1, self.instance1_url)
-        time.sleep(self.ping_interval)
-        background_tasks.add_task(self.send_ping_from_instance2, self.instance2_url)
-        time.sleep(self.ping_interval)
+        while self.run_game:
+            background_tasks.add_task(self.send_ping_from_instance1, self.instance1_url)
+            time.sleep(self.ping_interval)
+            background_tasks.add_task(self.send_ping_from_instance2, self.instance2_url)
+            time.sleep(self.ping_interval)
 
         # while self.run_game:
 
@@ -53,3 +54,9 @@ class MessageHandler:
         #     response_instance2 = self.send_ping_from_instance2()
         #     # print(response_instance2)
         #     time.sleep(self.ping_interval)
+            
+    def pause_game(self):
+        self.run_game = False
+    
+    def resume_game(self):
+        self.run_game = True
