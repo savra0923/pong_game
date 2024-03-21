@@ -4,7 +4,6 @@ import threading
 import time
 import logging
 
-app = FastAPI()
 
 class MessageHandler:
     def __init__(self):
@@ -12,6 +11,7 @@ class MessageHandler:
         self.instance2_url = "http://localhost:8001"
         self.ping_interval = 0
         self.run_game = False
+        self.app = FastAPI()
 
     def send_ping_from_instance1(self):
         logging.info("Background task started")
@@ -34,26 +34,28 @@ class MessageHandler:
             raise HTTPException(status_code=502, detail=f"Error sending ping from instance2: {e}")
 
     def start_game(self, pong_time_ms: float, background_tasks: BackgroundTasks):
-        self.ping_interval = pong_time_ms / 1000
-        self.run_game = True
-        
-        while self.run_game:
-            background_tasks.add_task(self.send_ping_from_instance1, self.instance1_url)
-            time.sleep(self.ping_interval)
-            background_tasks.add_task(self.send_ping_from_instance2, self.instance2_url)
-            time.sleep(self.ping_interval)
+        @self.app.get("/")
+        async def ping():
+            self.ping_interval = pong_time_ms / 1000
+            self.run_game = True
+            
+            # while self.run_game:
+            #     background_tasks.add_task(self.send_ping_from_instance1, self.instance1_url)
+            #     time.sleep(self.ping_interval)
+            #     background_tasks.add_task(self.send_ping_from_instance2, self.instance2_url)
+            #     time.sleep(self.ping_interval)
 
-        # while self.run_game:
+            while self.run_game:
 
-        #     # Send ping from instance 1
-        #     response_instance1 = self.send_ping_from_instance1()
-        #     # print(response_instance1)
-        #     time.sleep(self.ping_interval)
+                # Send ping from instance 1
+                response_instance1 = self.send_ping_from_instance1()
+                # print(response_instance1)
+                time.sleep(self.ping_interval)
 
-        #     # Send ping from instance 2
-        #     response_instance2 = self.send_ping_from_instance2()
-        #     # print(response_instance2)
-        #     time.sleep(self.ping_interval)
+                # Send ping from instance 2
+                response_instance2 = self.send_ping_from_instance2()
+                # print(response_instance2)
+                time.sleep(self.ping_interval)
             
     def pause_game(self):
         self.run_game = False
